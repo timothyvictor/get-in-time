@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+// import React, { useState, useEffect } from 'react';
 // import {
 //   getResultsArray,
 //   init,
@@ -8,55 +8,67 @@ import React, { useState, useEffect } from 'react';
 //   setTempo,
 // } from './metronome';
 
-import { init, startRecording, setTempo, setPerformanceLength } from './engine';
+// import { init, startRecording, stopRecording, setTempo, setPerformanceLength, updateClickResolution } from './engine';
 
-export default function Controls({ onStopCallback, onStartCallback }) {
-  const [tempo, updateTempo] = useState(120);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [performanceLength, updatePerformanceLength] = useState(15);
-  // const tapPanel = document.querySelector('#tap-panel');
-  useEffect(() => {
-    init();
-  }, []);
-  useEffect(() => {
-    setTempo(parseInt(tempo));
-  }, [tempo]);
-  useEffect(() => {
-    setPerformanceLength(parseInt(performanceLength));
-  }, [performanceLength]);
+import React from 'react';
 
-  function onComplete(performanceMap) {
-    setIsPlaying(false);
-    onStopCallback({
-      performanceMap,
-    });
-  }
+export default function Controls({
+  onStopCallback,
+  onStartCallback,
+  tempo,
+  setTempo,
+  isPlaying,
+  clickResolution,
+  setClickResolution,
+  performanceLength,
+  setPerformanceLength,
+}) {
+  // useEffect(() => {
+  //   setTempo(parseInt(tempo));
+  // }, [tempo]);
+  // useEffect(() => {
+  //   setPerformanceLength(parseInt(performanceLength));
+  // }, [performanceLength]);
+  // useEffect(() => {
+  //   updateClickResolution(parseInt(clickResolution))
+  // }, [clickResolution]);
 
-  function start() {
-    setIsPlaying(true);
-    startRecording({
-      onComplete,
-    });
-    // tapPanel.focus();
-    onStartCallback();
-  }
+  // function onComplete(performanceMap) {
+  //   setIsPlaying(false);
+  //   onStopCallback({
+  //     performanceMap,
+  //   });
+  // }
 
-  function stop() {
-    setIsPlaying(false);
-    stopPlaying();
-    onStopCallback({
-      results: getResultsArray(),
-      tempo,
-    });
-  }
+  // function start() {
+  //   setIsPlaying(true);
+  //   startRecording({
+  //     onComplete,
+  //   });
+  //   // tapPanel.focus();
+  //   onStartCallback();
+  // }
+
+  // function stop() {
+  //   setIsPlaying(false);
+  //   // stopPlaying();
+  //   stopRecording();
+  //   onStopCallback({
+  //     // results: getResultsArray(),
+  //     // tempo,
+  //   });
+  // }
   // const play = () => console.log('Play');
-  const changeResolution = (event) => {
-    return true;
-    // setNoteResolution(parseInt(event.target.value, 10));
-  };
-  const tempoInput = (event) => updateTempo(event.target.value);
-  const onPerformanceLengthInput = (event) =>
-    updatePerformanceLength(event.target.value);
+  // const changeResolution = (event) => {
+  //   setClickResolution(parseInt(event.target.value, 10));
+  //   // return true;
+  //   // setNoteResolution(parseInt(event.target.value, 10));
+  // };
+  const onTempoChange = (event) => setTempo(parseInt(event.target.value, 10));
+  const onPerformanceLengthChange = (event) =>
+    setPerformanceLength(parseInt(event.target.value, 10));
+  const onClickResolutionChange = (event) =>
+    setClickResolution(parseInt(event.target.value, 10));
   const handleSubmit = (event) => event.preventDefault();
   return (
     <form id="controls" className="controls" onSubmit={handleSubmit}>
@@ -71,14 +83,18 @@ export default function Controls({ onStopCallback, onStartCallback }) {
           max="160.0"
           step="1"
           style={{ height: '20px', width: '200px' }}
-          onInput={tempoInput}
+          onInput={onTempoChange}
           value={tempo}
           disabled={isPlaying}
         />
       </div>
       <div>
         <label htmlFor="playback-resolution">Playback resolution:</label>
-        <select id="playback-resolution" onChange={changeResolution}>
+        <select
+          value={clickResolution}
+          id="playback-resolution"
+          onChange={onClickResolutionChange}
+        >
           <option value={16}>&#9836; 16th notes</option>
           <option value={8}>&#9834; 8th notes</option>
           <option value={4}>&#9833; Quarter notes</option>
@@ -95,16 +111,16 @@ export default function Controls({ onStopCallback, onStartCallback }) {
           max="60.0"
           step="1"
           style={{ height: '20px', width: '180px' }}
-          onInput={onPerformanceLengthInput}
+          onInput={onPerformanceLengthChange}
           value={performanceLength}
           disabled={isPlaying}
         />
       </div>
       <div className="controls__play-button">
-        <button onClick={start} disabled={isPlaying}>
+        <button onClick={onStartCallback} disabled={isPlaying}>
           &#9658; Play
         </button>
-        {/* <button onClick={stop}>&#9726; Stop</button> */}
+        <button onClick={onStopCallback}>&#9726; Stop</button>
       </div>
     </form>
   );
